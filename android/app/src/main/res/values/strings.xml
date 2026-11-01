@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">WA Shakti</string>
+    <string name="title_activity_main">WA Shakti</string>
+    <string name="package_name">com.atharvotech.washakti</string>
+    <string name="custom_url_scheme">com.atharvotech.washakti</string>
+</resources>

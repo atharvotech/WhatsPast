@@ -80,11 +80,20 @@ The backend is an **Express server on `http://127.0.0.1:3000`**.
 | `GET` | `/api/status` | `{ activeUser, users[], status, pairingCode, lastError }` |
 | `POST` | `/api/auth/login` | `{ phone }` → starts pairing session, generates 8-digit code |
 | `POST` | `/api/auth/switch` | `{ phone }` → switch to a saved account |
+| `POST` | `/api/auth/logout` | `{ phone?, purgeData? }` → cleanly logout and revoke session |
+| `POST` | `/api/auth/delete` | `{ phone }` → permanently wipe credentials and local database |
 | `GET` | `/api/chats` | Returns array of chat summary objects (sorted newest first) |
 | `GET` | `/api/chats/:chatId` | Returns array of message objects for a chat (sorted oldest first) |
+| `POST` | `/api/chats/archive` | `{ chat_id, archived }` → toggle archived status for a chat |
 | `POST` | `/api/settings/toggle` | `{ chat_id, enable }` → enable/disable logging for a chat |
+| `GET` | `/api/settings/tracking-mode` | Returns `{ mode: 'live' \| 'passive' }` |
+| `POST` | `/api/settings/tracking-mode` | `{ mode }` → switch between 'live' (24/7) and 'passive' |
 | `POST` | `/api/storage/clear` | Wipes all messages for activeUser (keeps auth) |
+| `GET` | `/api/profile-pic/:jid` | Fetches & caches WhatsApp profile picture with LID fallback |
+| `GET` | `/api/presence/:jid` | Returns presence, lastSeen, today/total online time & sessions |
+| `POST` | `/api/presence/track` | `{ jid, enable }` → start/stop tracking online hours for contact |
 | `GET` | `/media/:filename` | Static file server for downloaded media |
+| `GET` | `/api/media/download` | Serves media files with attachment headers for one-click downloading |
 
 ### Connection States (`status` field)
 - `disconnected` — not linked
@@ -269,7 +278,7 @@ npm run sync:apk
 - [ ] Search within a specific chat's messages
 - [ ] Notification badge count in sidebar
 - [ ] Group member name resolution (beyond pushName)
-- [ ] Video/audio inline player in ChatView
+- [x] Video/audio inline player in ChatView (video, audio, PDF preview, document cards, speed toggle, scrubber)
 - [ ] Dark/light theme toggle
 - [ ] Settings page (port config, data directory override)
 - [ ] Multi-account simultaneous connections

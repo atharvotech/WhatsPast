@@ -18,13 +18,14 @@
  * along with this program.  If not, see <https://gnu.org>.
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
   getStatus,
   getChats,
   loginPhone,
   switchAccount,
   toggleChatLogging,
+  archiveChat,
   clearStorage
 } from '../api/client';
 
@@ -40,28 +41,65 @@ export function AppProvider({ children }) {
   });
 
   const [chats, setChats] = useState([]);
-  const [selectedChatId, setSelectedChatId] = useState(null);
+  const [selectedChatId, setSelectedChatIdState] = useState(null);
   const [showPurgeModal, setShowPurgeModal] = useState(false);
   const [showAddAccount, setShowAddAccount] = useState(false);
   const [phoneInput, setPhoneInput] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Mobile & Android History Back Integration
+  const setSelectedChatId = useCallback((chatId) => {
+    setSelectedChatIdState(chatId);
+    if (chatId) {
+      try {
+        window.history.pushState({ chatId }, '');
+      } catch (_) {}
+    }
+  }, []);
+
   useEffect(() => {
+    const handlePopState = () => {
+      setSelectedChatIdState(null);
+    };
+
+    const handleBackButton = (e) => {
+      if (selectedChatId) {
+        e?.preventDefault?.();
+        setSelectedChatIdState(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    document.addEventListener('backbutton', handleBackButton);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('backbutton', handleBackButton);
+    };
+  }, [selectedChatId]);
+
+  useEffect(() => {
+    let isMounted = true;
     const fetchCoreData = async () => {
       const statusData = await getStatus();
+      if (!isMounted) return;
+
       if (statusData) {
         setSystemStatus(statusData);
         if (statusData.activeUser) {
           const chatsData = await getChats();
-          if (chatsData) setChats(chatsData);
+          if (isMounted && chatsData) setChats(chatsData);
         }
       }
     };
 
     fetchCoreData();
     const interval = setInterval(fetchCoreData, 2000);
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const handleStartPairing = async (e) => {
@@ -77,7 +115,7 @@ export function AppProvider({ children }) {
       setShowAddAccount(true);
       return;
     }
-    setSelectedChatId(null);
+    setSelectedChatIdState(null);
     await switchAccount(phone);
   };
 
@@ -88,10 +126,18 @@ export function AppProvider({ children }) {
     );
   };
 
+  const handleToggleArchiveChat = async (chatId, currentArchived) => {
+    const nextArchived = !currentArchived;
+    await archiveChat(chatId, nextArchived);
+    setChats((prev) =>
+      prev.map((c) => (c.chat_id === chatId ? { ...c, archived: nextArchived } : c))
+    );
+  };
+
   const handlePurgeCache = async () => {
     await clearStorage();
     setChats([]);
-    setSelectedChatId(null);
+    setSelectedChatIdState(null);
     setShowPurgeModal(false);
   };
 
@@ -102,9 +148,11 @@ export function AppProvider({ children }) {
       chat.latest_text?.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (!matchesSearch) return false;
-    if (activeTab === 'archived') return chat.archived;
-    if (activeTab === 'locked') return chat.locked;
-    return !chat.archived && !chat.locked;
+
+    // Explicitly match only the chats for the active tab
+    if (activeTab === 'archived') return Boolean(chat.archived);
+    // 'all' tab: show everything that is NOT archived
+    return !chat.archived;
   });
 
   const activeChatObj = chats.find((c) => c.chat_id === selectedChatId);
@@ -129,6 +177,7 @@ export function AppProvider({ children }) {
         handleStartPairing,
         handleSwitchAccount,
         handleToggleChatLogging,
+        handleToggleArchiveChat,
         handlePurgeCache,
         filteredChats,
         activeChatObj

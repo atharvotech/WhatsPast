@@ -29,22 +29,32 @@ export default function ChatView() {
   const { messages } = useMessages(selectedChatId);
 
   return (
-    <div className={`${selectedChatId ? 'flex' : 'hidden md:flex'} flex-col flex-1 bg-[#0b141a]`}>
+    <div
+      className={`absolute inset-0 md:relative md:inset-auto flex flex-col flex-1 bg-[#0b141a] border-l border-white/[0.06] h-full overflow-hidden z-20 md:z-auto transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        selectedChatId
+          ? 'translate-x-0 opacity-100 pointer-events-auto'
+          : 'translate-x-full opacity-0 pointer-events-none md:translate-x-0 md:opacity-100 md:pointer-events-auto'
+      }`}
+    >
       {!selectedChatId ? (
-        <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
-          <div className="w-16 h-16 rounded-full bg-[#202c33] flex items-center justify-center text-3xl mb-3">
-            🛡️
+        <div className="flex-1 flex flex-col items-center justify-center text-center p-8 select-none">
+          <div className="w-20 h-20 rounded-full bg-[#202c33] border border-white/5 flex items-center justify-center text-4xl mb-4 shadow-xl ring-1 ring-white/5">
+            ⚡
           </div>
-          <h2 className="text-lg font-semibold text-[#e9edef]">WA Shakti Interceptor Ready</h2>
-          <p className="text-xs text-[#8696a0] max-w-md mt-1">
-            Captures real-time &amp; offline-queued messages, full edit revisions, deleted messages
-            (Anti-Revoke), View-Once photos, stickers, and locked/archived chats.
+          <h2 className="text-xl font-bold text-[#e9edef] tracking-wide">WhatsPast Web</h2>
+          <p className="text-[13px] text-[#8696a0] max-w-sm mt-2 leading-relaxed">
+            Select a chat from the sidebar to inspect intercepted messages, recovered deleted texts,
+            photos, videos, stickers, and complete edit history.
           </p>
+          <div className="mt-8 flex items-center gap-1.5 text-[11px] text-[#8696a0]">
+            <span>🔒</span>
+            <span>Local &amp; End-to-end Decrypted Storage</span>
+          </div>
         </div>
       ) : (
         <>
           <ChatHeader />
-          <MessageList messages={messages} />
+          <MessageList messages={messages} chatId={selectedChatId} />
         </>
       )}
     </div>

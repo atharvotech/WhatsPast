@@ -27,7 +27,7 @@ import PurgeModal from './components/Modals/PurgeModal';
 export default function App() {
   return (
     <AppProvider>
-      <div className="flex h-screen w-screen bg-[#0b141a] text-[#e9edef] overflow-hidden select-none">
+      <div className="flex h-full w-full bg-[#0b141a] text-[#e9edef] overflow-hidden select-none">
         <Sidebar />
         <ChatView />
         <PurgeModal />

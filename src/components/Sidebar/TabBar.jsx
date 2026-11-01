@@ -21,30 +21,47 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 
-const TABS = [
-  { id: 'all', label: 'All Chats' },
-  { id: 'archived', label: '📦 Archived' },
-  { id: 'locked', label: '🔒 Locked' }
-];
-
 export default function TabBar() {
-  const { activeTab, setActiveTab } = useApp();
+  const { activeTab, setActiveTab, chats } = useApp();
+
+  const allCount = chats.filter((c) => !c.archived).length;
+  const archivedCount = chats.filter((c) => c.archived).length;
+
+  const tabs = [
+    { id: 'all', label: 'All Chats', count: allCount, icon: '💬' },
+    { id: 'archived', label: 'Archived', count: archivedCount, icon: '📦' }
+  ];
 
   return (
-    <div className="flex px-2 pb-2 gap-1.5 border-b border-[#222d34]">
-      {TABS.map((tab) => (
-        <button
-          key={tab.id}
-          onClick={() => setActiveTab(tab.id)}
-          className={`flex-1 py-1.5 text-xs font-medium rounded-md transition ${
-            activeTab === tab.id
-              ? 'bg-[#00a884] text-[#0b141a] font-semibold'
-              : 'bg-[#202c33] text-[#8696a0] hover:text-[#e9edef]'
-          }`}
-        >
-          {tab.label}
-        </button>
-      ))}
+    <div className="flex px-3 pb-2.5 pt-0.5 gap-2 border-b border-white/[0.06] select-none">
+      {tabs.map((tab) => {
+        const isActive = activeTab === tab.id;
+        return (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 py-1.5 px-3 text-xs font-semibold rounded-full flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 ${
+              isActive
+                ? 'bg-[#00a884] text-[#0b141a] shadow-md shadow-[#00a884]/20'
+                : 'bg-[#202c33]/70 hover:bg-[#202c33] text-[#8696a0] hover:text-[#e9edef] border border-white/[0.04]'
+            }`}
+          >
+            <span className="text-sm">{tab.icon}</span>
+            <span>{tab.label}</span>
+            {tab.count > 0 && (
+              <span
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold transition-colors ${
+                  isActive
+                    ? 'bg-[#0b141a]/20 text-[#0b141a]'
+                    : 'bg-[#111b21] text-[#8696a0] border border-white/5'
+                }`}
+              >
+                {tab.count}
+              </span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }

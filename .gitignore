@@ -1,5 +1,5 @@
 # ==========================================
-# WA Shakti — Git Ignore Rules
+# WA Shakti / WhatsPast — Git Ignore Rules
 # ==========================================
 
 # ------------------------------------------
@@ -8,6 +8,11 @@
 node_modules/
 .pnp/
 .pnp.js
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
 
 # ------------------------------------------
 # Production & Web Build Outputs
@@ -28,6 +33,7 @@ out/
 *.AppImage
 *.deb
 *.rpm
+*.snap
 *.zip
 *.tar.gz
 
@@ -39,14 +45,24 @@ android/app/build/
 android/build/
 android/local.properties
 android/.idea/
+android/.cxx/
+android/.externalNativeBuild/
+android/captures/
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/capacitor-cordova-android-plugins/
 *.apk
 *.aab
+*.ap_
+*.dex
+*.class
 *.keystore
 *.jks
 
 # ------------------------------------------
 # WhatsApp Session Credentials & User Data
-# (CRITICAL: Never commit auth keys or private messages)
+# (CRITICAL: Never commit auth keys, media, or private messages)
 # ------------------------------------------
 .wa-shakti-data/
 users_data/
@@ -56,6 +72,10 @@ media/
 creds.json
 *creds*.json
 *.session
+config.json
+*.sqlite
+*.sqlite3
+*.db
 
 # ------------------------------------------
 # Environment Variables & Secrets
@@ -66,6 +86,9 @@ creds.json
 .env.production.local
 .env.local
 *.env
+*.pem
+*.key
+*.cert
 
 # ------------------------------------------
 # Logs & Process Dumps
@@ -95,6 +118,7 @@ Thumbs.db
 [Tt]humbs.db
 
 .idea/
+*.iml
 *.sublime-project
 *.sublime-workspace
 *.swp
@@ -109,8 +133,10 @@ Thumbs.db
 !.vscode/extensions.json
 
 # ------------------------------------------
-# Local Agent / Extension Directories
+# Local Agent / AI Scratch Directories
 # ------------------------------------------
 Cline/
 .gemini/
-
+.claude/
+.cursor/
+scratch/

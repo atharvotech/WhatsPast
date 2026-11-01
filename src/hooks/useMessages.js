@@ -30,14 +30,36 @@ export function useMessages(selectedChatId) {
       return;
     }
 
+    let isMounted = true;
     const fetchMessages = async () => {
       const data = await getChatMessages(selectedChatId);
-      if (data) setMessages(data);
+      if (!isMounted || !data) return;
+
+      setMessages((prev) => {
+        // Compare to prevent useless re-render loops on mobile polling
+        if (prev.length === data.length && prev.length > 0) {
+          const prevLast = prev[prev.length - 1];
+          const newLast = data[data.length - 1];
+          if (
+            prevLast.id === newLast.id &&
+            prevLast.latest_text === newLast.latest_text &&
+            prevLast.edit_history?.length === newLast.edit_history?.length &&
+            prevLast.is_deleted === newLast.is_deleted &&
+            prevLast.media_path === newLast.media_path
+          ) {
+            return prev;
+          }
+        }
+        return data;
+      });
     };
 
     fetchMessages();
     const interval = setInterval(fetchMessages, 1800);
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [selectedChatId]);
 
   return { messages };

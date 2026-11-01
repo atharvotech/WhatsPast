@@ -27,24 +27,27 @@ export default function PurgeModal() {
   if (!showPurgeModal) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-      <div className="bg-[#202c33] border border-[#2a3942] rounded-lg max-w-sm w-full p-5">
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 z-50">
+      <div className="bg-[#202c33] border border-white/10 rounded-2xl max-w-sm w-full p-5 shadow-2xl animate-modal select-none">
+        <div className="w-12 h-12 rounded-full bg-red-500/15 text-red-400 flex items-center justify-center text-xl mb-3 border border-red-500/20">
+          🗑️
+        </div>
         <h3 className="text-base font-bold text-red-400">Wipe Local Interceptor Cache?</h3>
         <p className="text-xs text-[#8696a0] mt-2 leading-relaxed">
           This will delete all locally logged messages and downloaded media for{' '}
-          <strong>+{systemStatus.activeUser}</strong> without affecting your main phone&apos;s
+          <strong className="text-[#e9edef]">+{systemStatus.activeUser}</strong> without affecting your main phone&apos;s
           WhatsApp chats.
         </p>
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="flex justify-end gap-2.5 mt-5">
           <button
             onClick={() => setShowPurgeModal(false)}
-            className="px-3 py-1.5 rounded text-xs bg-[#2a3942] hover:bg-[#374852]"
+            className="px-3.5 py-2 rounded-xl text-xs font-medium bg-[#2a3942] hover:bg-[#374852] text-[#e9edef] transition active:scale-95"
           >
             Cancel
           </button>
           <button
             onClick={handlePurgeCache}
-            className="px-3 py-1.5 rounded text-xs bg-red-500 text-white font-semibold hover:bg-red-600"
+            className="px-3.5 py-2 rounded-xl text-xs bg-red-500 text-white font-semibold hover:bg-red-600 transition shadow-lg shadow-red-500/25 active:scale-95"
           >
             Yes, Wipe Cache
           </button>

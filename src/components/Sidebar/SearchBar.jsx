@@ -25,14 +25,29 @@ export default function SearchBar() {
   const { searchQuery, setSearchQuery } = useApp();
 
   return (
-    <div className="p-2 bg-[#111b21]">
-      <input
-        type="text"
-        placeholder="Search intercepted chats or messages..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full bg-[#202c33] text-xs text-[#e9edef] px-3 py-2 rounded-lg outline-none placeholder-[#8696a0]"
-      />
+    <div className="px-3 py-2 bg-[#111b21]">
+      <div className="relative flex items-center">
+        <span className="absolute left-3 text-[#8696a0] pointer-events-none">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </span>
+        <input
+          type="text"
+          placeholder="Search or start new search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full bg-[#202c33] text-[13px] text-[#e9edef] pl-9 pr-8 py-1.5 rounded-lg outline-none placeholder-[#8696a0] focus:ring-1 focus:ring-[#00a884] transition"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery('')}
+            className="absolute right-2.5 text-[#8696a0] hover:text-[#e9edef] text-sm"
+          >
+            ✕
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -19,15 +19,134 @@
 -->
 
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark h-full">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#111b21" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>WA Shakti — Universal Interceptor</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        --sat: env(safe-area-inset-top, 0px);
+        --sab: env(safe-area-inset-bottom, 0px);
+        --sal: env(safe-area-inset-left, 0px);
+        --sar: env(safe-area-inset-right, 0px);
+      }
+
+      * {
+        -webkit-tap-highlight-color: transparent;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100%;
+        height: 100dvh;
+        overflow: hidden;
+        overscroll-behavior-y: none;
+        touch-action: manipulation;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+
+      body {
+        padding-top: var(--sat);
+        padding-bottom: var(--sab);
+        padding-left: var(--sal);
+        padding-right: var(--sar);
+      }
+
+      /* Slim, dark WhatsApp Web scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.16);
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Native-like momentum scrolling for touch */
+      .overflow-y-auto, .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Premium Animations & Micro-Interactions */
+      @keyframes bubbleFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px) scale(0.99);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes modalSlideUp {
+        from {
+          opacity: 0;
+          transform: translateY(18px) scale(0.96);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes pulseGlow {
+        0%, 100% {
+          opacity: 1;
+          filter: drop-shadow(0 0 3px #00a884);
+        }
+        50% {
+          opacity: 0.6;
+          filter: drop-shadow(0 0 9px #00a884);
+        }
+      }
+
+      @keyframes floatButtonBounce {
+        0% { transform: translateY(10px) scale(0.9); opacity: 0; }
+        60% { transform: translateY(-2px) scale(1.02); opacity: 1; }
+        100% { transform: translateY(0) scale(1); opacity: 1; }
+      }
+
+      .animate-bubble {
+        animation: bubbleFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .animate-modal {
+        animation: modalSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .animate-float-in {
+        animation: floatButtonBounce 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .pulse-glow {
+        animation: pulseGlow 2s infinite ease-in-out;
+      }
+
+      /* Refined glassmorphism header */
+      .glass-header {
+        background: rgba(32, 44, 51, 0.92);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+    </style>
   </head>
-  <body class="bg-[#0b141a] text-[#e9edef] antialiased selection:bg-[#00a884] selection:text-black overflow-hidden">
-    <div id="root"></div>
+  <body class="bg-[#0b141a] text-[#e9edef] antialiased selection:bg-[#00a884] selection:text-black">
+    <div id="root" class="h-full w-full"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

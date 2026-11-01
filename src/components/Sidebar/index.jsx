@@ -31,9 +31,11 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`${
-        selectedChatId ? 'hidden md:flex' : 'flex'
-      } flex-col w-full md:w-[380px] lg:w-[420px] border-r border-[#222d34] bg-[#111b21]`}
+      className={`absolute inset-0 md:relative md:inset-auto flex flex-col w-full md:w-[380px] lg:w-[420px] h-full overflow-hidden border-r border-white/[0.06] bg-[#111b21] select-none z-10 md:z-auto transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        selectedChatId
+          ? '-translate-x-[20%] opacity-0 pointer-events-none md:translate-x-0 md:opacity-100 md:pointer-events-auto'
+          : 'translate-x-0 opacity-100 pointer-events-auto'
+      }`}
     >
       <Header />
       <PairingBanner />

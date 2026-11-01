@@ -27,3 +27,23 @@ export function formatDate(ts) {
   if (!ts) return '';
   return new Date(ts * 1000).toLocaleDateString();
 }
+
+export function formatFileSize(bytes) {
+  if (!bytes || bytes <= 0 || isNaN(bytes)) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
+}
+
+export function formatMediaDuration(seconds) {
+  if (!seconds || isNaN(seconds) || seconds < 0) return '0:00';
+  const sec = Math.floor(seconds);
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  if (m >= 60) {
+    const h = Math.floor(m / 60);
+    const remM = m % 60;
+    return `${h}:${remM.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
