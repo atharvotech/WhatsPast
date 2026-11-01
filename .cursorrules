@@ -1,0 +1,123 @@
+# WA Shakti — Cursor Rules
+
+## Project Identity
+This is **WA Shakti**, a WhatsApp message interceptor built with:
+- **Backend**: Node.js + Express + Baileys (`server/index.js`)
+- **Frontend**: React 18 + Vite + Tailwind CSS CDN
+- **Targets**: Web browser, Electron desktop, Capacitor Android
+
+Read `AGENTS.md` for the full architecture and data flow before making changes.
+
+---
+
+## Code Style Rules
+
+### General
+- Use **named exports** for all utilities, hooks, and context. Default export only for React components.
+- No `any` types if TypeScript is ever added. Use JSDoc comments for complex function signatures.
+- Keep business logic in `context/AppContext.jsx` and `server/index.js` — NOT in components.
+- Keep all HTTP calls in `src/api/client.js` only. Never `fetch()` directly in a component.
+
+### React
+- All components get state via `useApp()` hook from `AppContext` — no prop drilling except:
+  - `MessageBubble` receives `msg` prop
+  - `MessageList` receives `messages` prop
+- Prefer `useEffect` with proper cleanup (clearInterval, clearTimeout) for all polling.
+- Auto-scroll: always attach `messagesEndRef` to an empty `<div>` at the bottom of the message list.
+
+### Styling
+- Use Tailwind utility classes only — no inline `style={}` objects.
+- Dark theme colors are defined in `AGENTS.md`. Never use raw hex in className unless it matches the design system.
+- Accent color: `#00a884` (WA green). Never change this.
+- All borders use `border-[#222d34]` or `border-[#2a3942]`.
+
+### Backend (server/index.js)
+- Always call `writeDB(phone)` (debounced) or `writeDB(phone, true)` (immediate) after mutating `dbMemoryCache`.
+- Never block the event loop — all Baileys event handlers must be synchronous or properly async.
+- Always use `normalizeJid()` when using a JID as a lookup key.
+- `processMessagesBatch` must handle ALL message types — never silently drop unknown types without a console.log.
+- Real-time messages (`type: 'notify'`) must always log to console: `✅ New message from X: "..."`
+
+---
+
+## File Ownership
+
+| File | Responsibility |
+|------|---------------|
+| `server/index.js` | All WhatsApp protocol logic, data persistence, REST API |
+| `src/api/client.js` | All frontend→backend HTTP communication |
+| `src/context/AppContext.jsx` | All React global state + handlers |
+| `src/hooks/useMessages.js` | Messages polling for selected chat |
+| `src/utils/format.js` | Pure formatting helpers only |
+| `src/components/*/` | Pure display logic, no direct state mutations |
+
+---
+
+## API Contract
+
+Backend runs on `http://127.0.0.1:3000`. All endpoints documented in `AGENTS.md`.
+
+When adding a new backend endpoint:
+1. Add the route in `server/index.js`
+2. Add a corresponding function in `src/api/client.js`
+3. Call it from `AppContext` or a component via `useApp()`
+
+---
+
+## Naming Conventions
+
+| Thing | Convention | Example |
+|-------|-----------|---------|
+| Component files | PascalCase | `MessageBubble.jsx` |
+| Hook files | camelCase with `use` prefix | `useMessages.js` |
+| Context files | PascalCase | `AppContext.jsx` |
+| API functions | camelCase verbs | `getChats()`, `toggleChatLogging()` |
+| Handler functions | `handle` prefix | `handleStartPairing()` |
+| State setters | `set` prefix | `setSelectedChatId()` |
+
+---
+
+## Database Schema (Quick Reference)
+
+```js
+// db_{phone}.json
+{
+  chats:    { [chatId]: { chat_id, name, is_group, archived, locked, last_timestamp } },
+  contacts: { [normalizedJid]: "Display Name" },
+  messages: { [chatId]: [ messageObject ] },
+  settings: { [chatId]: false }   // false = muted; missing key = enabled
+}
+```
+
+---
+
+## Message Object Shape
+
+```js
+{
+  id: string,           // WhatsApp message key ID
+  chat_id: string,      // JID of the chat
+  sender_jid: string,   // Normalized JID of sender
+  sender_name: string,  // Resolved display name
+  from_me: boolean,
+  message_type: 'text' | 'image' | 'sticker' | 'audio' | 'video' | 'document' | 'location' | 'contact',
+  original_text: string,
+  latest_text: string,  // May differ from original if edited
+  edit_history: [{ text: string, time: ISO8601 }],
+  is_deleted: boolean,
+  is_view_once: boolean,
+  media_path: string | null,  // e.g. "/media/img_phone_msgid.jpg"
+  timestamp: number     // Unix seconds
+}
+```
+
+---
+
+## Common Pitfalls to Avoid
+
+1. **Do NOT chain `upsertQueue` globally** — each message batch runs as an independent promise to prevent one failure from blocking all future messages.
+2. **Do NOT use `meta.name` blindly in `/api/chats`** — it may be a raw number. Check `db.contacts` first.
+3. **Do NOT wipe auth folder on reconnect (code 515)** — only wipe when `requestNewPairingCode === true`.
+4. **Do NOT call `fetchLatestBaileysVersion()` without a try/catch** — it makes a network call that fails offline.
+5. **Do NOT use `chat.sender_name` for the chat display name in the sidebar** — the API response field `sender_name` on the chat object is the resolved chat name, not the last sender.
+

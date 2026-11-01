@@ -1,0 +1,9 @@
+{
+  "appId": "com.atharvotech.washakti",
+  "appName": "WA Shakti",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true
+  }
+}

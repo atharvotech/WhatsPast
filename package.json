@@ -1,0 +1,44 @@
+{
+  "name": "wa-shakti-universal",
+  "version": "2.0.0",
+  "description": "Universal Offline-First WhatsApp Interceptor & Logger",
+  "main": "electron/main.js",
+  "scripts": {
+    "server": "node server/index.js",
+    "dev:web": "vite",
+    "build:web": "vite build",
+    "start:electron": "electron .",
+    "build:exe": "vite build && electron-builder --win --x64",
+    "sync:apk": "vite build && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@whiskeysockets/baileys": "^6.7.8",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "pino": "^9.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3",
+    "vite": "^5.3.1"
+  },
+  "build": {
+    "appId": "com.atharvotech.washakti",
+    "productName": "WA Shakti",
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "server/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  }
+}
